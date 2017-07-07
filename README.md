@@ -1,7 +1,7 @@
 # KrakenIFC
 Read data from Kraken API and make a csv
 
-##Usage
+## Usage
 ```
 krakenifc [pair] [period] [from] [to]
 [to] is optional
@@ -9,7 +9,7 @@ krakenifc [pair] [period] [from] [to]
 [from] and [to] are unix timestamp
 ```
 
-##Example
+## Example
 ```
 ./krakenifc XBTUSD 60 1499435417 > data.csv 
 0% processed
