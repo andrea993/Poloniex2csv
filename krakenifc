@@ -28,11 +28,25 @@ def getMarketData(pair, period, from, to=0)
 	out=Array.new
 	last=from*1e3.to_i
 
+	mkta=Array.new
 	loop do
-		src=Net::HTTP.get(URI("https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}"))
-		#puts "https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}"
-		spars=JSON.parse(src)['result']
-		mkta=spars.values[0]
+		errorcnt=20
+		loop do
+			begin
+				src=Net::HTTP.get(URI("https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}"))
+				#STDERR.puts "https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}"
+				spars=JSON.parse(src)['result']
+				mkta=spars.values[0]
+			rescue
+				errorcnt-=1
+				if (errorcnt == 0)
+					STDERR.puts("Cant download the page https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}")
+					exit
+				end
+			else
+				break
+			end
+		end
 		STDERR.puts "#{((mkta.first[TIME]*1e6-from)/(to-from)*100).to_i}% processed" 
 
 		mkta.each do |m|
