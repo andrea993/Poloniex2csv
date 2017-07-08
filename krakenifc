@@ -3,10 +3,12 @@
 require 'net/http'
 require 'json'
 require 'csv'
+require 'pry'
+
 VALUE=0
 VOLUME=1
 TIME=2
-	
+
 def getMarketData(pair, period, from, to=0)
 	if (to <= 0) #get current time
 		src=Net::HTTP.get(URI("https://api.kraken.com/0/public/Time"))
@@ -28,30 +30,48 @@ def getMarketData(pair, period, from, to=0)
 
 	loop do
 		src=Net::HTTP.get(URI("https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}"))
+		#puts "https://api.kraken.com/0/public/Trades?pair=#{pair}&since=#{last}"
 		spars=JSON.parse(src)['result']
 		mkta=spars.values[0]
-		STDERR.puts "#{((mkta.first[TIME]*1e6-from)/(to-from)*100).to_i}% processed" if mkta.first != nil
+		STDERR.puts "#{((mkta.first[TIME]*1e6-from)/(to-from)*100).to_i}% processed" 
 
 		mkta.each do |m|
 			value=m[VALUE].to_f
 			volume=m[VOLUME].to_f
 			time=(m[TIME].to_f * 1e6).to_i
-			nvalue+=1
 			
 			curtime=time if curtime<0
-			curvalue+=value
-			curvolume+=volume
-
+		
 			if (time >= to)
 				out << { 'time' => curtime, 'value' => curvalue/nvalue, 'volume' => curvolume/nvalue }
 				STDERR.puts "Done"
 				return out
-			elsif (time >= curtime + period) 
+			elsif (time >= curtime + period and nvalue==0) 
+				raise "Period too short" if (out.length == 0)
+				t0=out.last['time']
+				t1=time
+				y0=out.last['value']
+				y1=value
+				h=Hash.new
+				h['time']=curtime
+				h['value']=(y0-y1)/(t0-t1)*(curtime-t0)+y0
+				y0=out.last['volume']
+				y1=volume
+				h['volume']=(y0-y1)/(t0-t1)*(curtime-t0)+y0
+				out << h
+				#binding.pry
+				STDERR.puts "Interpolation at #{curtime}"
+				curtime=time+period
+			elsif (time >= curtime + period)
 				out << { 'time' => curtime, 'value' => curvalue/nvalue, 'volume' => curvolume/nvalue }
 				curtime+=period
 				curvalue=0.0
 				curvolume=0.0
 				nvalue=0
+			else
+				curvalue+=value
+				curvolume+=volume
+				nvalue+=1
 			end
 
 		end
