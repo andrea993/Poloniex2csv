@@ -3,7 +3,7 @@
 require 'net/http'
 require 'json'
 require 'csv'
-require 'pry'
+#require 'pry'
 
 VALUE=0
 VOLUME=1
@@ -61,7 +61,7 @@ def getMarketData(pair, period, from, to=0)
 				out << h
 				#binding.pry
 				STDERR.puts "Interpolation at #{curtime}"
-				curtime=time+period
+				curtime+=period
 			elsif (time >= curtime + period)
 				out << { 'time' => curtime, 'value' => curvalue/nvalue, 'volume' => curvolume/nvalue }
 				curtime+=period
