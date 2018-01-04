@@ -1,20 +1,15 @@
 # KrakenIFC
-Read data from Kraken API and make a csv
+This scirpt read historic data from [Poloniex](https://poloniex.com/) API and make a csv of three columns (`[TIMESTAMP],[VALUE],[VOLUME]`) in order to import cryptocurrencies charts in any program that supports csv file.
 
 ## Usage
 ```
-krakenifc [pair] [period] [from] [to]
-[to] is optional
-[period] is in seconds
-[from] and [to] are unix timestamp
+poloniex2csv [pair] 
 ```
 
 ## Example
 ```
-./krakenifc XBTUSD 60 1499435417 > data.csv 
-0% processed
-20% processed
-46% processed
-80% processed
-Done
+./poloniex2csv USDT_BTC
+Download data...
+Parse data...
+Write USDT_BTC.csv...
 ```
