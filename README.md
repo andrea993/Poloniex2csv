@@ -1,5 +1,5 @@
 # poloniex2csv
-This scirpt read historic data from [Poloniex](https://poloniex.com/) API and make a csv of three columns (`[TIMESTAMP],[VALUE],[VOLUME]`) in order to import cryptocurrencies charts in any program that supports csv file.
+This script read historic data from [Poloniex](https://poloniex.com/) API and make a csv of three columns (`[TIMESTAMP],[VALUE],[VOLUME]`) in order to import cryptocurrencies charts in any program that supports csv file.
 
 ## Usage
 ```
