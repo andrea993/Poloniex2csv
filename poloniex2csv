@@ -1,0 +1,35 @@
+#!/usr/bin/ruby
+
+require 'net/http'
+require 'json'
+require 'csv'
+
+if ARGV.count < 1
+	puts 'Usage'
+	puts 'poloniex2csv [pair]'
+	exit -1
+end
+
+pair=ARGV[0]
+
+puts 'Download data...'
+src=Net::HTTP.get(URI("https://poloniex.com/public?command=returnChartData&currencyPair=#{pair}&start=0&period=300"))
+
+puts 'Parse data...'
+spars=JSON.parse(src)
+
+fname="#{pair}.csv"
+
+puts "Write #{fname}..."
+s=CSV.open(fname, "w") do |csv|
+	spars.each do |js|
+		line = {
+			'time' => js['date'],
+			'value' => js['weightedAverage'],
+			'volume' => js['volume']
+		}
+		csv << line.values
+	end
+end
+
+
